@@ -1,5 +1,5 @@
-import autocannon from "autocannon";
-import fs from "fs";
+const autocannon = require("autocannon");
+const fs = require("fs");
 
 const payload = JSON.parse(fs.readFileSync("./payload.json", "utf8"));
 const payloadBody = require("./payload.json");
@@ -30,14 +30,16 @@ function runTest(connections, duration) {
   await runTest(1, 10);
 
   console.log("Running test...");
-  const result = await runTest(10, 30);
+  const result = await runTest(10, 120);
 
+  console.log("result 2222:>> ", result);
   console.log("--- METRICS ---");
   console.log("Avg latency (ms):", result.latency.average);
   console.log("p95 latency (ms):", result.latency.p95);
   console.log("p99 latency (ms):", result.latency.p99);
   console.log("Throughput (req/sec):", result.requests.average);
   console.log("Total requests:", result.requests.total);
+  console.log("Completed requests:", result.requests.completed);
   console.log("Errors:", result.errors);
 })();
 // 🧠 HOW TO INTERPRET (AI API CONTEXT)

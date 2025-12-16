@@ -6,6 +6,7 @@
   "dependencies": {
     "autocannon": "^8.0.0",
     "axios": "^1.13.2",
+    "node-fetch": "^3.3.2",
     "nodemon": "^3.1.11"
   },
   "devDependencies": {},

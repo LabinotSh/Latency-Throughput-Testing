@@ -1,4 +1,8 @@
-import { performance } from "node:perf_hooks";
+// import { performance } from "node:perf_hooks";
+const fs = require("fs");
+const { performance } = require("node:perf_hooks");
+
+// import { performance } from "node:perf_hooks";
 
 // const URL = "https://external-api.com/generate";
 const payloadBody = require("./payload.json");
@@ -37,8 +41,13 @@ async function throughputTest(concurrency = 10) {
   const requests = Array.from({ length: concurrency }, () =>
     fetch(URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: "BASE64" }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image_base64: payload.image,
+        remove_background: true,
+      }),
     })
   );
 
@@ -58,7 +67,16 @@ async function runTests(iterations = 10) {
 
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
-    await fetch(URL, options);
+    await fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image_base64: payload.image,
+        remove_background: true,
+      }),
+    });
     times.push(performance.now() - start);
   }
 
@@ -67,8 +85,11 @@ async function runTests(iterations = 10) {
   const avg = times.reduce((a, b) => a + b, 0) / times.length;
   const p95 = times[Math.floor(times.length * 0.95)];
   const p99 = times[Math.floor(times.length * 0.99)];
+  console.log("avg :>> ", avg);
+  console.log("p95 :>> ", p95);
+  console.log("p99 :>> ", p99);
 
   console.log({ avg, p95, p99 });
 }
 
-runTests();
+// runTests();
