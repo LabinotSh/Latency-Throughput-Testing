@@ -93,3 +93,53 @@ async function runTests(iterations = 10) {
 }
 
 // runTests();
+
+//Concurrency latency testing-----
+async function concurrentLatencyTest(concurrency = 20) {
+  console.log(`\nRunning concurrent latency test (${concurrency} requests)...`);
+
+  const startAll = performance.now();
+
+  const requests = Array.from({ length: concurrency }, async () => {
+    const start = performance.now();
+
+    const res = await fetch(URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image_base64: payload.image,
+        remove_background: true,
+      }),
+    });
+
+    await res.json();
+
+    return performance.now() - start;
+  });
+
+  const latencies = await Promise.all(requests);
+
+  const endAll = performance.now();
+
+  // Sort for percentiles
+  latencies.sort((a, b) => a - b);
+
+  const avg = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+  const p95 = latencies[Math.floor(latencies.length * 0.95)];
+  const p99 = latencies[Math.floor(latencies.length * 0.99)];
+
+  console.log(`Total wall time: ${(endAll - startAll).toFixed(2)} ms`);
+  console.log(`Avg latency: ${avg.toFixed(2)} ms`);
+  console.log(`p95 latency: ${p95.toFixed(2)} ms`);
+  console.log(`p99 latency: ${p99.toFixed(2)} ms`);
+
+  return { concurrency, avg, p95, p99 };
+}
+
+(async () => {
+  await concurrentLatencyTest(10);
+  await concurrentLatencyTest(20);
+  await concurrentLatencyTest(30);
+})();
