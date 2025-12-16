@@ -2,19 +2,23 @@ import autocannon from "autocannon";
 import fs from "fs";
 
 const payload = JSON.parse(fs.readFileSync("./payload.json", "utf8"));
+const payloadBody = require("./payload.json");
 
 function runTest(connections, duration) {
   console.log("payload :>> ", payload);
   return new Promise((resolve) => {
     const instance = autocannon({
-      url: "https://api.example.com/generate",
+      url: payloadBody.API,
       method: "POST",
       connections,
       duration,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        image_base64: payload.image,
+        remove_background: true,
+      }),
     });
 
     instance.on("done", (result) => resolve(result));

@@ -1,6 +1,9 @@
 import { performance } from "node:perf_hooks";
 
-const URL = "https://external-api.com/generate";
+// const URL = "https://external-api.com/generate";
+const payloadBody = require("./payload.json");
+const payload = JSON.parse(fs.readFileSync("./payload.json", "utf8"));
+const URL = payloadBody.API;
 
 //Latency
 async function testLatency() {
@@ -12,9 +15,12 @@ async function testLatency() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      image: "BASE64_STRING_HERE",
+      image_base64: payload.image,
+      remove_background: true,
     }),
   });
+
+  console.log("response  222:>> ", response);
 
   await response.json();
 
