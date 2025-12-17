@@ -140,6 +140,9 @@ async function concurrentLatencyTest(concurrency = 20) {
 
 (async () => {
   await concurrentLatencyTest(10);
-  await concurrentLatencyTest(20);
+  for (let i = 0; i < 10; i++) {
+    await concurrentLatencyTest(20);
+  }
+  //   await concurrentLatencyTest(20);
   await concurrentLatencyTest(30);
 })();

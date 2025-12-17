@@ -25,12 +25,37 @@ function runTest(connections, duration) {
   });
 }
 
+function runRPSTest() {
+  return new Promise((resolve) => {
+    const instance = autocannon({
+      url: payloadBody.API,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      // 🔥 THIS is the key part
+      overallRate: 10, // try 10, then 15, then 20
+      duration: 120,
+      connections: 100, // allow enough concurrency
+      timeout: 15000,
+      body: JSON.stringify({
+        image_base64: payload.image,
+        remove_background: true,
+      }),
+    });
+    instance.on("done", (result) => resolve(result));
+  });
+}
+
 (async () => {
   console.log("Warming up...");
-  await runTest(1, 10);
+  //   await runTest(1, 10);
 
   console.log("Running test...");
-  const result = await runTest(10, 120);
+  //   const result = await runTest(10, 120);
+
+  const result = await runRPSTest();
 
   console.log("result 2222:>> ", result);
   console.log("--- METRICS ---");
